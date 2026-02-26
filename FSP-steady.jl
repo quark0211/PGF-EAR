@@ -1,12 +1,8 @@
-
-
 using Distributed
 addprocs(19)
 @everywhere using Distributions,TaylorSeries,HypergeometricFunctions,MultiFloats
 @everywhere using StatsBase,LinearAlgebra,DataFrames,CSV
 @everywhere using Optim
-
-
 
 
 # Generate sample data from true distribution

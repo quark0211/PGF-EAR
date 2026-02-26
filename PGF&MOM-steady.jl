@@ -1,10 +1,8 @@
-
 using Distributed
-addprocs(60)
+addprocs(14)
 @everywhere using Distributions,TaylorSeries,HypergeometricFunctions,MultiFloats
 @everywhere using StatsBase,LinearAlgebra,DataFrames,CSV
 @everywhere using Optim
-
 
 @everywhere function cus_hist(data::Vector)
     max1 = maximum(data)
@@ -44,7 +42,7 @@ end
     hist_data = cus_hist(data)
     ini_params=zeros(3)
     elapsed_time = @elapsed begin
-        results_PGF = optimize(ps->sdist(hist_data,exp.(ps),zo,wo),ini_params,NelderMead(),Optim.Options(show_trace=false,g_tol=1e-30,iterations = 2000)).minimizer
+        results_PGF = optimize(ps->sdist(hist_data,exp.(ps),zo,wo),ini_params,NelderMead(),Optim.Options(show_trace=false,g_tol=1e-20,iterations = 2000)).minimizer
     end
     p = exp.(results_PGF)
     mse=calculate_realative_mse(p,true_param)
@@ -52,7 +50,7 @@ end
 end
 
 @everywhere function mom_cal(X)
-    # === 观测矩 ===
+    # === Observed moments ===
     N = length(X)
     μ1_obs = mean(X)
     xc = X .- μ1_obs
@@ -62,8 +60,7 @@ end
     μ6_obs = mean(xc .^ 6)
 
     μ_obs = [μ1_obs, μ2_obs, μ3_obs]
-
-    # === 方差估计 ===
+    # === Variance estimation ===
     σ2 = zeros(3)
     σ2[1] = (1 / N) * μ2_obs^2
     σ2[2] = (1 / N) * (μ4_obs - ((N - 3) / (N - 1)) * μ2_obs^2)
@@ -93,7 +90,7 @@ end
     μ_obs,σ2 = mom_cal(data)
     ini_params=zeros(3)
     elapsed_time = @elapsed begin
-        results_PGF = optimize(ps->MOM(μ_obs,σ2,exp.(ps)),ini_params,NelderMead(),Optim.Options(show_trace=false,g_tol=1e-30,iterations = 3000)).minimizer
+        results_PGF = optimize(ps->MOM(μ_obs,σ2,exp.(ps)),ini_params,NelderMead(),Optim.Options(show_trace=false,g_tol=1e-20,iterations = 2000)).minimizer
     end
     p = exp.(results_PGF)
     mse=calculate_realative_mse(p,true_param)

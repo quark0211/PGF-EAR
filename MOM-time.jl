@@ -57,7 +57,6 @@ end
     return total_err
 end
 
-
 @everywhere function main_mom(data, true_param, time, N; f_tol=1e-8, patience=60, max_iters=1000)
     weights = JSON.parse.(data)
     weights = [Float64.(aa) for aa in weights]
@@ -77,7 +76,7 @@ end
             println("⚠️ Δf < f_tol ($stable_count[]/$patience)")
             if stable_count[] ≥ patience
                 println("✅ Early stopping triggered by callback.")
-                return true  # 提前终止
+                return true 
             end
         elseif delta_f>1e-2
             stable_count[] = 0
@@ -95,7 +94,7 @@ end
                 iterations = max_iters,
                 g_tol=1e-20,
                 show_trace = true,
-                # callback = my_callback
+                callback = my_callback
             )
         )
     end
@@ -112,7 +111,9 @@ data_l12_10000 = CSV.read("l12-data.csv",DataFrame)
 data_l40_10000 = CSV.read("l40-data.csv",DataFrame)
 data_l120_10000 = CSV.read("l120-data.csv",DataFrame)
 param10000 =Matrix(CSV.read("params.csv",DataFrame))
+#cell number list
 nc_list = [100,300,1000,3000,6000]  
+#time points list
 time_list = [collect(0.:6/(Int(12000/nc)):6) for nc in nc_list]
 
 res_mom = pmap(gj->main_mom(data_l1_10000[2:end,gj],param10000[:,gj],time_list[5][2:end],12000),1:50)

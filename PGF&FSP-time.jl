@@ -113,14 +113,12 @@ end
     weights = JSON.parse.(data)
     weights = [Float64.(aa) for aa in weights]
     ini_params = zeros(4)
-    # 状态记录器
+
     prev_f = Ref(Inf)
     stable_count = Ref(0)
 
-    # 目标函数
     obj_func(params) = obj_pgf(exp.(params), weights, time, xo, wo)
 
-    # callback 机制
     function my_callback(state)
         curr_f = state.value
         delta_f = abs(curr_f - prev_f[])./abs(prev_f[])
@@ -131,7 +129,7 @@ end
             println("⚠️ Δf < f_tol ($stable_count[]/$patience)")
             if stable_count[] ≥ patience
                 println("✅ Early stopping triggered by callback.")
-                return true  # 提前终止
+                return true 
             end
         elseif delta_f>1e-2
             stable_count[] = 0
@@ -141,7 +139,6 @@ end
         return false
     end
 
-    # 优化过程
     elapsed_time = @elapsed begin
         result = optimize(
             obj_func,
@@ -166,14 +163,11 @@ end
     weights = [Float64.(aa) for aa in weights]
     ini_params = zeros(4)
 
-    # 状态记录器
     prev_f = Ref(Inf)
     stable_count = Ref(0)
 
-    # 目标函数定义
     obj_func(params) = obj_fsp(exp.(params), weights, time)
 
-    # callback 机制
     function my_callback(state)
         curr_f = state.value
         delta_f = abs(curr_f - prev_f[]) / (abs(prev_f[]) + 1e-8)
@@ -184,7 +178,7 @@ end
             println("⚠️ Δf < f_tol ($stable_count[]/$patience)")
             if stable_count[] ≥ patience
                 println("✅ Early stopping triggered by callback.")
-                return true  # 提前终止
+                return true 
             end
         elseif delta_f>1e-2
             stable_count[] = 0
@@ -193,8 +187,7 @@ end
         prev_f[] = curr_f
         return false
     end
-
-    # 优化过程
+    
     elapsed_time = @elapsed begin
         result = optimize(
             obj_func,
