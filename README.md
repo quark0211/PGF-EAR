@@ -25,7 +25,7 @@ Packages:
 - Statistics 1.11.1
 - StatsBase 0.34.10
 - TaylorSeries 0.20.10
-- 
+
 ## File description
 
 This repository is organized into three main parts: **data generation**, **parameter inference**, and **model selection**.  
